@@ -4,6 +4,8 @@ import { Image } from 'react-native';
 import api from '../../services/api';
 import formatValue from '../../utils/formatValue';
 
+
+
 import {
   Container,
   Header,
@@ -23,7 +25,7 @@ interface Food {
   name: string;
   description: string;
   price: number;
-  formattedValue: number;
+  formattedPrice: number;
   thumbnail_url: string;
 }
 
@@ -33,6 +35,16 @@ const Orders: React.FC = () => {
   useEffect(() => {
     async function loadOrders(): Promise<void> {
       // Load orders from API
+      const response = await api.get<Food[]>(`/orders`);
+
+      const foods = response.data.map(food => {
+        return {
+          ...food,
+          formattedPrice: formatValue(food.price),
+        };
+      });
+
+      setOrders(foodOrders);
     }
 
     loadOrders();
