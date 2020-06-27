@@ -135,7 +135,17 @@ const FoodDetails: React.FC = () => {
   const toggleFavorite = useCallback(() => {
     // Toggle if food is favorite or not
 
-    setIsFavorite(!isFavorite);
+    const newFavoriteState = !isFavorite;
+
+    const { _, ...rest } = food;
+
+    if (newFavoriteState) {
+      api.post('/favorites', rest);
+    } else {
+      api.delete(`/favorites/${food.id}`);
+    }
+
+    setIsFavorite(newFavoriteState);
   }, [isFavorite, food]);
 
   const cartTotal = useMemo(() => {
@@ -160,12 +170,10 @@ const FoodDetails: React.FC = () => {
 
   async function handleFinishOrder(): Promise<void> {
     // Finish the order and save on the API
-    const { id: product_id, name, description } = food;
+    const { id: product_id, name, description, ...rest } = food;
     await api.post('/orders', {
       product_id,
-      name,
-      description,
-      extras,
+      ...rest,
     });
   }
 
